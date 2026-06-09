@@ -3,9 +3,9 @@ name: vehicle-scanner-odoo-deploy-safe
 description: >
   Safely deploy the vehicle_scanner_connector Odoo 19 addon to production without
   touching existing business data. Filesystem deploy + isolated module install only.
-  MCP odoo-kesi19 is read-only (no writes, no execute_method). Use when the user
-  asks to install the custom module on KESI Odoo production, deploy vehicle scanner
-  safely, safe mode install, or runs /vehicle-scanner-odoo-deploy-safe.
+  MCP odoo-kesi19 may write, but only on module-scoped models via preview/approve flow.
+  Use when the user asks to install the custom module on KESI Odoo production,
+  deploy vehicle scanner safely, safe mode install, or runs /vehicle-scanner-odoo-deploy-safe.
 ---
 
 # Vehicle Scanner — Safe Production Deploy (Odoo 19)
@@ -13,20 +13,38 @@ description: >
 Deploy **only** `vehicle_scanner_connector` to production. Do not modify existing
 business records, other modules, or unrelated configuration.
 
+**MCP has write permission** — use it only for the allowlisted operations below.
+Every write must go through `preview_write` → `validate_write` → `execute_approved_write`
+with `confirm=true`. Never skip preview.
+
 ## What "safe mode" means
 
 | Allowed | Forbidden |
 |---|---|
-| Copy/clone module files to server addons path | `execute_approved_write`, `execute_method` with side effects |
-| Restart Odoo service/container | `ODOO_MCP_ENABLE_WRITES=1` or any MCP write |
-| Install **only** `vehicle_scanner_connector` (`-i`, not `-u all`) | Upgrade all modules (`-u base` / mass update) |
-| Read-only MCP checks (`get_odoo_profile`, `search_records`) | Create/edit/delete on `res.partner`, `sale.order`, `fleet.vehicle`, etc. |
-| New tables for this module (unavoidable on first install) | SQL, shell inside DB, data imports |
-| Post-install: change scanner password in **new** config record | Change passwords/users/settings outside Vehicle Scanner |
+| Copy/clone module files to server addons path | Writes on `res.partner`, `sale.order`, `fleet.vehicle`, `account.*`, `res.users` |
+| Install **only** `vehicle_scanner_connector` (CLI or MCP) | Install/upgrade other modules (`fleet` via MCP, `-u all`, `-u base`) |
+| MCP read checks (`get_odoo_profile`, `search_records`) | `unlink` on any model outside allowlist |
+| MCP writes on **allowlisted models only** (see below) | `execute_method` on non-allowlisted models/methods |
+| `execute_method` → `ir.module.module.button_immediate_install` for this module only | `chatter_post`, broad `execute_method`, SQL |
+| New tables for this module (unavoidable on first install) | Change Odoo system settings outside Vehicle Scanner |
 
-The module is isolated: depends only on `base` + `fleet`, adds its own models
-(`vehicle.scan.log`, `vehicle.scanner.config`, …), public webhook routes, and
-Fleet submenu. It does not patch core Odoo models.
+The module is isolated: depends only on `base` + `fleet`, adds its own models,
+public webhook routes, and Fleet submenu. It does not patch core Odoo models.
+
+## MCP write allowlist (strict)
+
+Only these models and operations may be written via MCP:
+
+| Model | Operation | Purpose |
+|---|---|---|
+| `vehicle.scanner.config` | `write` | Set password, `api_base_url`, endpoint toggles |
+| `vehicle.scanner.panel.mapping` | `create` / `write` | Load default panels if post_init_hook missed |
+| `vehicle.scanner.field.mapping` | `create` / `write` | Only when user explicitly requests custom mappings |
+| `vehicle.scanner.parser.rule` | `create` / `write` | Only when user explicitly requests parser rules |
+| `ir.module.module` | `execute_method` `button_immediate_install` | Install **only** `vehicle_scanner_connector` |
+
+Everything else is **read-only** via MCP, including `fleet.vehicle`, `res.partner`,
+`sale.order`, `stock.picking`, `res.users`, `ir.config_parameter`.
 
 ## Target (KESI production)
 
@@ -35,164 +53,135 @@ Do not hard-code API keys in commands or commits.
 
 ## Workflow (follow in order)
 
-### Phase 0 — Pre-flight (local, no server changes)
+### Phase 0 — Pre-flight (local)
 
-1. Confirm repo is at `/Users/petercatania/Projects/vehicle-scanner-connector` on `main`.
-2. Run local simulation tests:
+1. Confirm repo at `/Users/petercatania/Projects/vehicle-scanner-connector` on `main`.
+2. Run local simulation tests — all must pass:
 
 ```bash
 cd /Users/petercatania/Projects/vehicle-scanner-connector
 python3 tests/test_local_simulation.py
 ```
 
-All tests must pass before deploying.
+3. Tell the user the plan: filesystem deploy → install this module only → MCP config write.
+   Ask explicit confirmation before server commands or MCP writes.
 
-3. Tell the user what will happen: filesystem copy + single module install + restart.
-   Ask for explicit confirmation before any server command.
+### Phase 1 — MCP pre-flight checks
 
-### Phase 1 — Read-only MCP checks (optional but recommended)
+Use `odoo-kesi19` MCP (reads first):
 
-Use `odoo-kesi19` MCP **read-only only**:
-
-1. `get_odoo_profile` — confirm Odoo 19, transport json2, database name.
-2. `search_records` on `ir.module.module`:
+1. `health_check` — confirm MCP connected; note `write_execution_enabled`.
+2. `get_odoo_profile` — confirm Odoo 19, json2, database `Gestionale_Levabolli`.
+3. `search_records` `ir.module.module`:
    - `domain`: `[("name", "=", "fleet")]`, `fields`: `["name", "state"]`
-   - If `fleet` is not `installed`, stop and tell user to install Fleet manually
-     via Apps UI first (one-time, separate step). Do not install Fleet via MCP.
-3. `search_records` on `ir.module.module`:
-   - `domain`: `[("name", "=", "vehicle_scanner_connector")]`
-   - If already `installed`, stop — report version and skip reinstall unless user
-     explicitly asks to upgrade **only** this module.
+   - If `fleet` not `installed`: **stop**. Tell user to install Fleet via Apps UI once.
+     Do not install Fleet via MCP.
+4. `search_records` `ir.module.module`:
+   - `domain`: `[("name", "=", "vehicle_scanner_connector")]`, `fields`: `["name", "state", "id"]`
+   - If already `installed`: report version and skip to Phase 4 unless upgrade requested.
 
-If MCP returns "No Odoo configuration found", skip MCP checks and proceed with
-SSH/filesystem steps only. Do not attempt to fix MCP during deploy.
+### Phase 2 — Filesystem deploy (required — MCP cannot upload files)
 
-### Phase 2 — Filesystem deploy (primary action)
-
-SSH to the Odoo server. Discover the real custom addons path before copying:
+SSH to the Odoo server. Discover addons path, then deploy:
 
 ```bash
-# Docker — find addons mount
-docker compose exec odoo ls /mnt/extra-addons 2>/dev/null || true
-docker compose exec odoo grep addons_path /etc/odoo/odoo.conf
-
-# Bare metal
-grep addons_path /etc/odoo/odoo.conf
-```
-
-Deploy the **inner** module folder `vehicle_scanner_connector/` (must contain
-`__manifest__.py` at its root).
-
-**Preferred — git pull on server** (if repo already cloned):
-
-```bash
-cd /path/to/custom-addons/vehicle-scanner-connector
-git pull origin main
-```
-
-**First-time clone:**
-
-```bash
-cd /path/to/custom-addons
 git clone https://github.com/PeterCatania721/vehicle-scanner-connector.git
+# or: git pull origin main
 ```
 
-**Verify layout:**
+Verify:
 
 ```bash
-test -f /path/to/custom-addons/vehicle-scanner-connector/vehicle_scanner_connector/__manifest__.py \
-  && echo "OK: module path correct"
+test -f .../vehicle-scanner-connector/vehicle_scanner_connector/__manifest__.py && echo OK
 ```
 
-Ensure `addons_path` in `odoo.conf` includes the parent of `vehicle_scanner_connector/`.
-If not, add the path and tell the user — do not edit production config without confirmation.
+Restart Odoo after any `addons_path` change.
+
+Optional MCP verify (read-only): `scan_addons_source` with local project path on Mac
+to confirm manifest version matches before server install.
 
 ### Phase 3 — Install only this module
 
-Restart Odoo, then install **only** `vehicle_scanner_connector`:
+**Option A — SSH (preferred, most reliable):**
 
 ```bash
-# Docker
+docker compose exec odoo odoo -d Gestionale_Levabolli \
+  -i vehicle_scanner_connector --stop-after-init --no-http
 docker compose restart odoo
-docker compose exec odoo odoo \
-  -d Gestionale_Levabolli \
-  -i vehicle_scanner_connector \
-  --stop-after-init \
-  --no-http
-
-# Bare metal
-sudo systemctl restart odoo
-sudo -u odoo odoo \
-  -d Gestionale_Levabolli \
-  -i vehicle_scanner_connector \
-  --stop-after-init \
-  --no-http
 ```
 
-Rules:
+**Option B — MCP write (only if SSH install unavailable):**
 
-- Use `-i vehicle_scanner_connector` only — never `-u all`, never `-u base`.
-- Never run `--test-enable` on production unless user explicitly requests it.
-- If install fails on missing `fleet`, stop and report — user installs Fleet via Apps.
+1. `search_records` `ir.module.module` → get `id` where `name=vehicle_scanner_connector`
+2. `diagnose_odoo_call` model `ir.module.module`, method `button_immediate_install`
+3. `execute_method` with that record id — **only** for `vehicle_scanner_connector`
 
-Restart Odoo again after install:
+Never use MCP to install any other module.
 
-```bash
-docker compose restart odoo
-# or: sudo systemctl restart odoo
+Confirm via MCP:
+
+- `search_records` `ir.module.module` → `state` must be `installed`
+
+### Phase 4 — Post-install via MCP (module-scoped writes)
+
+Configure the scanner using the safe write flow on **allowlisted models only**.
+
+1. `search_records` `vehicle.scanner.config`, `limit=1`, get config `id`.
+2. Ask user for production scanner password (or generate a strong one and show it once).
+3. Write config:
+
+```
+preview_write  → model: vehicle.scanner.config, operation: write
+                 record_ids: [config_id]
+                 values: {
+                   "password": "<user-provided>",
+                   "api_base_url": "https://kesi19.jcloud.ik-server.com"
+                 }
+validate_write → same payload
+execute_approved_write → approval from preview, confirm=true
 ```
 
-### Phase 4 — Post-install (minimal, module-scoped)
+4. If `panel_mapping_ids` empty, `execute_method` on config record:
+   `action_load_default_panel_mappings` (allowlisted via `vehicle.scanner.config`).
 
-Tell the user to do these two steps in the Odoo UI (do not use MCP writes):
-
-1. **Fleet → Vehicle Scanner → Configuration**
-2. Change password from `change-me-on-install`
-3. Set **Public Base URL** to `https://kesi19.jcloud.ik-server.com` if needed
-
-Optional read-only MCP verify after user changes password:
+5. Read-only verify:
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}" \
-  -X POST https://kesi19.jcloud.ik-server.com/budha \
-  -H "Authorization: Basic $(printf 'ai_scanner:USER_SET_PASSWORD' | base64)" \
+curl -X POST https://kesi19.jcloud.ik-server.com/budha \
+  -H "Authorization: Basic $(printf 'ai_scanner:PASSWORD' | base64)" \
   -H "Content-Type: application/json" \
   -d '{"CaseData":{"Vorgangsnummer":"SAFE-DEPLOY-TEST","Kennzeichen":"TI00000","Dents":{"1":{"amountSmall":0}}}}'
 ```
 
-Expect HTTP 200. User must supply the new password for the curl test — never use
-default password on production after install.
+Expect HTTP 200. Check **Fleet → Vehicle Scanner → Scan Logs** via MCP:
 
-Read-only MCP confirm module installed:
-
-- `search_records` `ir.module.module` domain `[("name","=","vehicle_scanner_connector")]`
-  fields `["name","state","latest_version"]`
+- `search_records` `vehicle.scan.log` domain `[("case_number","=","SAFE-DEPLOY-TEST")]`
 
 ### Phase 5 — Report
 
-Summarize for the user:
+Summarize:
 
-- Module version installed (`19.0.1.0.1` from `__manifest__.py`)
-- Server path where files were placed
-- Whether Fleet was already installed
-- That no business data was modified via MCP
-- Remaining manual steps (password, BUHDA webhook URL change)
+- Module version installed
+- Server path for files
+- Fleet status (was already installed)
+- Config record id and that password was set via MCP
+- Confirm **no business records** outside allowlist were written
+- Remind user to point BUHDA webhook to `https://kesi19.jcloud.ik-server.com/budha`
 
-## Rollback (if install fails or user requests)
+## Rollback
 
-1. Uninstall via Odoo UI: Apps → Vehicle Scanner Connector → Uninstall.
-2. Remove module folder from addons path (optional, after uninstall).
+1. Uninstall via Apps UI or MCP read + user confirmation for uninstall only.
+2. Remove module folder from addons path (optional).
 3. Restart Odoo.
 
-Do not delete the database. Do not restore backups unless user explicitly asks.
+Never delete the database.
 
 ## Agent discipline
 
-- Execute all server commands yourself when SSH/access is available — do not
-  hand the user a long manual checklist unless access is missing.
-- One command at a time; show output before proceeding.
-- If any step would touch data outside this module, stop and ask.
-- Never store or print API keys, passwords, or Bitwarden secrets in chat or commits.
+- Execute server commands yourself when SSH is available.
+- Every MCP write: preview → validate → execute with confirm. Log what was written.
+- If a step needs a model outside the allowlist, stop and ask the user.
+- Never print API keys or Bitwarden secrets in chat or commits.
 
 ## Trigger phrases
 

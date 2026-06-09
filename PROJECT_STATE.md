@@ -81,7 +81,8 @@ Run in Grok Build:
 /vehicle-scanner-odoo-deploy-safe
 ```
 
-Safe mode = filesystem deploy + install only this module. MCP read-only. No business data writes.
+Safe mode = filesystem deploy + install only this module. MCP writes allowed on
+module-scoped models only (preview → validate → execute). No business data writes.
 
 ## Next Steps (optional)
 
