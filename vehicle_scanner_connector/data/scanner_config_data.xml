@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="vehicle_scanner_config_default" model="vehicle.scanner.config">
+        <field name="name">Default Vehicle Scanner API</field>
+        <field name="username">ai_scanner</field>
+        <field name="password">change-me-on-install</field>
+        <field name="allow_cors" eval="False"/>
+        <field name="auto_create_vehicle" eval="False"/>
+    </record>
+</odoo>

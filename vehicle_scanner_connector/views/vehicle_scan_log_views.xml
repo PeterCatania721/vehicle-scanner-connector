@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_vehicle_scan_log_list" model="ir.ui.view">
+        <field name="name">vehicle.scan.log.list</field>
+        <field name="model">vehicle.scan.log</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="source"/>
+                <field name="license_plate"/>
+                <field name="vehicle_id"/>
+                <field name="case_number"/>
+                <field name="total_dents"/>
+                <field name="attachment_count"/>
+                <field name="status"/>
+                <field name="received_at"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_vehicle_scan_log_form" model="ir.ui.view">
+        <field name="name">vehicle.scan.log.form</field>
+        <field name="model">vehicle.scan.log</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle Scan Log">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="received,processed,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_attachments" type="object" class="oe_stat_button" icon="fa-paperclip">
+                            <field name="attachment_count" widget="statinfo" string="Attachments"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source"/>
+                            <field name="license_plate"/>
+                            <field name="vehicle_id"/>
+                            <field name="scan_id"/>
+                            <field name="case_number"/>
+                            <field name="claim_number"/>
+                        </group>
+                        <group>
+                            <field name="vehicle_description"/>
+                            <field name="chassis_number"/>
+                            <field name="mileage"/>
+                            <field name="total_dents"/>
+                            <field name="received_at"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Panels" name="panels">
+                            <field name="panel_ids">
+                                <list editable="bottom">
+                                    <field name="panel_index"/>
+                                    <field name="panel_name"/>
+                                    <field name="amount_small"/>
+                                    <field name="amount_medium"/>
+                                    <field name="amount_large"/>
+                                    <field name="is_aluminum"/>
+                                    <field name="is_glue"/>
+                                    <field name="is_ptp"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Raw JSON" name="raw_json">
+                            <field name="scan_data" nolabel="1"/>
+                        </page>
+                        <page string="Error" name="error" invisible="not error_message">
+                            <field name="error_message" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_vehicle_scan_log_search" model="ir.ui.view">
+        <field name="name">vehicle.scan.log.search</field>
+        <field name="model">vehicle.scan.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="license_plate"/>
+                <field name="case_number"/>
+                <field name="vehicle_id"/>
+                <filter name="filter_budha" string="BUHDA" domain="[('source', '=', 'budha')]"/>
+                <filter name="filter_generic" string="Generic" domain="[('source', '=', 'generic')]"/>
+                <filter name="filter_received" string="Received" domain="[('status', '=', 'received')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_source" string="Source" context="{'group_by': 'source'}"/>
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_vehicle" string="Vehicle" context="{'group_by': 'vehicle_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_vehicle_scan_log" model="ir.actions.act_window">
+        <field name="name">Scan Logs</field>
+        <field name="res_model">vehicle.scan.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_vehicle_scan_log_search"/>
+    </record>
+</odoo>

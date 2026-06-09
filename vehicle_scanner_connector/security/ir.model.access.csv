@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vehicle_scan_log_user,vehicle.scan.log.user,model_vehicle_scan_log,vehicle_scanner_connector.group_vehicle_scanner_user,1,0,0,0
+access_vehicle_scan_log_manager,vehicle.scan.log.manager,model_vehicle_scan_log,vehicle_scanner_connector.group_vehicle_scanner_manager,1,1,1,1
+access_vehicle_scan_panel_user,vehicle.scan.panel.user,model_vehicle_scan_panel,vehicle_scanner_connector.group_vehicle_scanner_user,1,0,0,0
+access_vehicle_scan_panel_manager,vehicle.scan.panel.manager,model_vehicle_scan_panel,vehicle_scanner_connector.group_vehicle_scanner_manager,1,1,1,1
+access_vehicle_scanner_config_manager,vehicle.scanner.config.manager,model_vehicle_scanner_config,vehicle_scanner_connector.group_vehicle_scanner_manager,1,1,1,1

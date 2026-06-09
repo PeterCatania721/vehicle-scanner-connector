@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_vehicle_scanner_root"
+        name="Vehicle Scanner"
+        parent="fleet.menu_root"
+        sequence="90"
+        groups="vehicle_scanner_connector.group_vehicle_scanner_user"/>
+
+    <menuitem
+        id="menu_vehicle_scan_log"
+        name="Scan Logs"
+        parent="menu_vehicle_scanner_root"
+        action="action_vehicle_scan_log"
+        sequence="10"
+        groups="vehicle_scanner_connector.group_vehicle_scanner_user"/>
+
+    <menuitem
+        id="menu_vehicle_scanner_config"
+        name="Configuration"
+        parent="menu_vehicle_scanner_root"
+        action="action_vehicle_scanner_config"
+        sequence="20"
+        groups="vehicle_scanner_connector.group_vehicle_scanner_manager"/>
+</odoo>
