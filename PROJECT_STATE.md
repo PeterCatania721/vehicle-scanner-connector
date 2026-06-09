@@ -71,9 +71,21 @@ odoo -d your_database -i vehicle_scanner_connector --test-enable --stop-after-in
 - **MCP:** `odoo-kesi19` — requires `ODOO_PASSWORD` env alongside `ODOO_API_KEY` (fixed in wrapper script)
 - **Flask reference:** `../Budha Connection Flask/budha_connect.py`
 
+## Safe production deploy
+
+Grok skill: `.grok/skills/vehicle-scanner-odoo-deploy-safe/`
+
+Run in Grok Build:
+
+```
+/vehicle-scanner-odoo-deploy-safe
+```
+
+Safe mode = filesystem deploy + install only this module. MCP read-only. No business data writes.
+
 ## Next Steps (optional)
 
-- Install module on KESI Odoo 19 production
+- Deploy to KESI Odoo 19 production via skill above
 - Point BUHDA scanner webhook from Flask `:7721/budha` to Odoo `/budha`
 - Auto-create repair orders from scan data
 - Rate limiting at reverse proxy
