@@ -7,6 +7,7 @@ class VehicleScanLog(models.Model):
     _order = 'received_at desc'
 
     name = fields.Char(string='Reference', required=True, index=True)
+    config_id = fields.Many2one('vehicle.scanner.config', string='Configuration', index=True)
     source = fields.Selection(
         [
             ('budha', 'BUHDA'),
@@ -16,6 +17,11 @@ class VehicleScanLog(models.Model):
         required=True,
         default='generic',
     )
+    market_code = fields.Selection(
+        related='config_id.market_code',
+        store=True,
+        readonly=True,
+    )
     vehicle_id = fields.Many2one('fleet.vehicle', string='Vehicle', index=True)
     license_plate = fields.Char(string='License Plate', index=True)
     scan_id = fields.Char(string='External Scan ID', index=True)
@@ -24,6 +30,19 @@ class VehicleScanLog(models.Model):
     vehicle_description = fields.Char(string='Vehicle Description')
     chassis_number = fields.Char(string='Chassis Number')
     mileage = fields.Char(string='Mileage')
+    insured_name = fields.Char(string='Insured Name')
+    examiner = fields.Char(string='Examiner')
+    first_registration = fields.Char(string='First Registration')
+    remarks = fields.Text(string='Remarks')
+    soft_pressing_labor = fields.Char(string='Soft Pressing Labor')
+    bodywork_labor = fields.Char(string='Bodywork Labor')
+    painting_labor = fields.Char(string='Painting Labor')
+    vehicle_type = fields.Char(string='Vehicle Type')
+    vehicle_color = fields.Char(string='Vehicle Color')
+    vehicle_external_id = fields.Char(string='Vehicle External ID')
+    is_scanned = fields.Boolean(string='Scanned')
+    replacement_parts_json = fields.Text(string='Replacement Parts (JSON)')
+    repairs_json = fields.Text(string='Repairs (JSON)')
     scan_data = fields.Text(string='Raw JSON')
     received_at = fields.Datetime(
         string='Received At',
@@ -47,13 +66,35 @@ class VehicleScanLog(models.Model):
     attachment_count = fields.Integer(compute='_compute_attachment_count')
     total_dents = fields.Integer(compute='_compute_total_dents', store=True)
 
-    @api.depends('panel_ids.amount_small', 'panel_ids.amount_medium', 'panel_ids.amount_large')
+    @api.depends(
+        'panel_ids.amount_small',
+        'panel_ids.amount_medium',
+        'panel_ids.amount_large',
+        'panel_ids.amount_oversize',
+        'panel_ids.amount_total',
+        'panel_ids.amount_10',
+        'panel_ids.amount_20',
+        'panel_ids.amount_30',
+        'panel_ids.amount_40',
+        'panel_ids.amount_50',
+    )
     def _compute_total_dents(self):
         for record in self:
-            record.total_dents = sum(
-                panel.amount_small + panel.amount_medium + panel.amount_large
-                for panel in record.panel_ids
-            )
+            total = 0
+            for panel in record.panel_ids:
+                total += (
+                    panel.amount_small
+                    + panel.amount_medium
+                    + panel.amount_large
+                    + panel.amount_oversize
+                    + panel.amount_total
+                    + panel.amount_10
+                    + panel.amount_20
+                    + panel.amount_30
+                    + panel.amount_40
+                    + panel.amount_50
+                )
+            record.total_dents = total
 
     def _compute_attachment_count(self):
         attachment_data = self.env['ir.attachment'].read_group(

@@ -20,17 +20,101 @@
                         <group string="Behavior">
                             <field name="allow_cors"/>
                             <field name="auto_create_vehicle"/>
+                            <field name="require_license_plate"/>
+                            <field name="auto_process_panels"/>
+                            <field name="strip_pdf_from_json_log"/>
                         </group>
                     </group>
-                    <group string="Endpoints">
-                        <div class="alert alert-info" role="alert">
-                            <p><strong>BUHDA (Flask-compatible):</strong> POST /budha</p>
-                            <p><strong>BUHDA (namespaced):</strong> POST /vehicle_scanner/budha</p>
-                            <p><strong>Generic scanner:</strong> POST /vehicle_scanner/receive</p>
-                            <p><strong>Legacy generic:</strong> POST /api/receive-vehicle-scan</p>
-                            <p>All endpoints require <code>Authorization: Basic ...</code> and <code>Content-Type: application/json</code>.</p>
-                        </div>
+                    <group string="Public API URLs">
+                        <group>
+                            <field name="api_base_url" placeholder="https://odoo.example.com"/>
+                            <field name="budha_api_url" readonly="1"/>
+                            <field name="generic_api_url" readonly="1"/>
+                            <field name="inbound_api_url" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="enable_budha_endpoint"/>
+                            <field name="budha_webhook_path"/>
+                            <field name="enable_generic_endpoint"/>
+                            <field name="generic_webhook_path"/>
+                            <field name="enable_inbound_endpoint"/>
+                            <field name="inbound_webhook_path"/>
+                        </group>
                     </group>
+                    <group string="BUHDA Market and Payload">
+                        <group>
+                            <field name="market_code"/>
+                            <field name="payload_wrapper_key"/>
+                        </group>
+                        <group string="API Responses">
+                            <field name="response_success_message"/>
+                            <field name="response_error_message"/>
+                            <field name="include_scan_log_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Panel Mappings" name="panel_mappings">
+                            <div>
+                                <button
+                                    name="action_load_default_panel_mappings"
+                                    type="object"
+                                    string="Load Default KESI Panels"
+                                    class="btn-secondary"/>
+                            </div>
+                            <field name="panel_mapping_ids">
+                                <list editable="bottom">
+                                    <field name="panel_index"/>
+                                    <field name="budha_name"/>
+                                    <field name="kesi_name"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Field Mappings" name="field_mappings">
+                            <field name="field_mapping_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="source_path"/>
+                                    <field name="target_field"/>
+                                    <field name="transform"/>
+                                    <field name="default_value"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Parser Rules" name="parser_rules">
+                            <field name="parser_rule_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="apply_on"/>
+                                    <field name="active"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="sequence"/>
+                                        <field name="apply_on"/>
+                                        <field name="active"/>
+                                    </group>
+                                    <group>
+                                        <field name="notes"/>
+                                    </group>
+                                    <field name="python_code" widget="code" options="{'mode': 'python'}"/>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Help" name="help">
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>BUHDA (Flask-compatible):</strong> POST /budha or /vehicle_scanner/budha</p>
+                                <p><strong>Generic scanner:</strong> POST /vehicle_scanner/receive or /api/receive-vehicle-scan</p>
+                                <p><strong>Inbound (auto-detect):</strong> POST /vehicle_scanner/inbound</p>
+                                <p>All endpoints require <code>Authorization: Basic ...</code> and <code>Content-Type: application/json</code>.</p>
+                                <p>Change the default password immediately after installation.</p>
+                            </div>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -44,8 +128,11 @@
                 <field name="name"/>
                 <field name="username"/>
                 <field name="active"/>
+                <field name="market_code"/>
+                <field name="enable_budha_endpoint"/>
+                <field name="enable_generic_endpoint"/>
+                <field name="enable_inbound_endpoint"/>
                 <field name="allow_cors"/>
-                <field name="auto_create_vehicle"/>
             </list>
         </field>
     </record>

@@ -1,6 +1,6 @@
 {
     'name': 'Vehicle Scanner Connector',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Fleet',
     'summary': 'Receive AI vehicle scan data from BUHDA and external scanners',
     'description': """
@@ -12,6 +12,7 @@ JSON payloads) via HTTP webhooks with Basic Auth.
 Features:
 - BUHDA-compatible endpoint (same payload as KESI Flask bridge)
 - Generic vehicle scan endpoint for custom scanners
+- Universal inbound endpoint with auto-detect payload format
 - Scan logs with panel-level dent data
 - PDF and image attachments stored on scan records
 - Fleet vehicle lookup by license plate
@@ -19,7 +20,7 @@ Features:
     """,
     'author': 'KESI SA',
     'website': 'https://www.kesi.ch',
-    'depends': ['base', 'fleet', 'repair'],
+    'depends': ['base', 'fleet'],
     'data': [
         'security/vehicle_scanner_security.xml',
         'security/ir.model.access.csv',
@@ -28,6 +29,7 @@ Features:
         'views/vehicle_scan_log_views.xml',
         'views/menu.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

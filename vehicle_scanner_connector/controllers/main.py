@@ -4,6 +4,12 @@ import logging
 from odoo import http
 from odoo.http import request
 
+from ..constants import (
+    BUDHA_ROUTE_PATHS,
+    GENERIC_ROUTE_PATHS,
+    INBOUND_ROUTE_PATHS,
+)
+
 _logger = logging.getLogger(__name__)
 
 
@@ -26,14 +32,21 @@ class VehicleScannerController(http.Controller):
             status=status,
         )
 
-    def _authenticate(self, config):
+    def _build_auth_error(self, config, use_generic=False):
+        if use_generic:
+            payload = {
+                'success': False,
+                'error': 'Invalid username or password',
+                'message': config.response_error_message,
+            }
+        else:
+            payload = config.build_error_response('Invalid username or password')
+        return self._json_response(payload, status=401, cors=config.allow_cors)
+
+    def _authenticate(self, config, use_generic=False):
         auth_header = request.httprequest.headers.get('Authorization')
         if not config.check_basic_auth(auth_header):
-            return self._json_response(
-                {'success': False, 'error': 'Invalid username or password'},
-                status=401,
-                cors=config.allow_cors,
-            )
+            return self._build_auth_error(config, use_generic=use_generic)
         return None
 
     def _read_json_body(self):
@@ -56,12 +69,19 @@ class VehicleScannerController(http.Controller):
             return self._json_response({'error': 'Method not allowed'}, status=405)
         return self._json_response({'status': 'ok'}, cors=True)
 
+    def _handle_scan_error(self, config, exc, status=400, use_generic=False):
+        if use_generic:
+            payload = {'success': False, 'error': str(exc), 'message': config.response_error_message}
+        else:
+            payload = config.build_error_response(str(exc))
+        return self._json_response(payload, status=status, cors=config.allow_cors)
+
     # ------------------------------------------------------------------
-    # BUHDA endpoints (compatible with Budha Connection Flask /budha)
+    # BUHDA endpoints
     # ------------------------------------------------------------------
 
     @http.route(
-        ['/budha', '/vehicle_scanner/budha'],
+        BUDHA_ROUTE_PATHS,
         type='http',
         auth='public',
         methods=['POST', 'OPTIONS'],
@@ -71,42 +91,32 @@ class VehicleScannerController(http.Controller):
         config = self._get_config()
         if request.httprequest.method == 'OPTIONS':
             return self._handle_options(config)
+        if not config.enable_budha_endpoint:
+            return self._handle_scan_error(config, 'BUHDA endpoint is disabled', status=403)
 
-        auth_error = self._authenticate(config)
+        auth_error = self._authenticate(config, use_generic=False)
         if auth_error:
             return auth_error
 
         data, error = self._read_json_body()
         if error:
-            return self._json_response(
-                {'status': 'error', 'error': error},
-                status=400,
-                cors=config.allow_cors,
-            )
+            return self._handle_scan_error(config, error)
 
         try:
             result = request.env['vehicle.scan.service'].sudo().process_budha_cases(data)
             return self._json_response(result, cors=config.allow_cors)
         except ValueError as exc:
-            return self._json_response(
-                {'status': 'error', 'error': str(exc)},
-                status=400,
-                cors=config.allow_cors,
-            )
+            return self._handle_scan_error(config, exc)
         except Exception as exc:
             _logger.exception('BUHDA scan processing failed')
-            return self._json_response(
-                {'status': 'error', 'error': str(exc)},
-                status=500,
-                cors=config.allow_cors,
-            )
+            return self._handle_scan_error(config, exc, status=500)
 
     # ------------------------------------------------------------------
-    # Generic scanner endpoint (from original AI Scanner plan)
+    # Generic scanner endpoint
     # ------------------------------------------------------------------
 
     @http.route(
-        ['/api/receive-vehicle-scan', '/vehicle_scanner/receive'],
+        GENERIC_ROUTE_PATHS,
         type='http',
         auth='public',
         methods=['POST', 'OPTIONS'],
@@ -116,32 +126,61 @@ class VehicleScannerController(http.Controller):
         config = self._get_config()
         if request.httprequest.method == 'OPTIONS':
             return self._handle_options(config)
+        if not config.enable_generic_endpoint:
+            return self._handle_scan_error(
+                config, 'Generic endpoint is disabled', status=403, use_generic=True,
+            )
 
-        auth_error = self._authenticate(config)
+        auth_error = self._authenticate(config, use_generic=True)
         if auth_error:
             return auth_error
 
         data, error = self._read_json_body()
         if error:
-            return self._json_response(
-                {'success': False, 'error': error},
-                status=400,
-                cors=config.allow_cors,
-            )
+            return self._handle_scan_error(config, error, use_generic=True)
 
         try:
             result = request.env['vehicle.scan.service'].sudo().process_generic_scan(data)
             return self._json_response(result, cors=config.allow_cors)
         except ValueError as exc:
-            return self._json_response(
-                {'success': False, 'error': str(exc)},
-                status=400,
-                cors=config.allow_cors,
-            )
+            return self._handle_scan_error(config, exc, use_generic=True)
         except Exception as exc:
             _logger.exception('Generic vehicle scan processing failed')
-            return self._json_response(
-                {'success': False, 'error': str(exc)},
-                status=500,
-                cors=config.allow_cors,
+            return self._handle_scan_error(config, exc, status=500, use_generic=True)
+
+    # ------------------------------------------------------------------
+    # Universal inbound endpoint (auto-detect payload format)
+    # ------------------------------------------------------------------
+
+    @http.route(
+        INBOUND_ROUTE_PATHS,
+        type='http',
+        auth='public',
+        methods=['POST', 'OPTIONS'],
+        csrf=False,
+    )
+    def inbound_webhook(self, **kw):
+        config = self._get_config()
+        if request.httprequest.method == 'OPTIONS':
+            return self._handle_options(config)
+        if not config.enable_inbound_endpoint:
+            return self._handle_scan_error(
+                config, 'Inbound endpoint is disabled', status=403, use_generic=True,
             )
+
+        auth_error = self._authenticate(config, use_generic=True)
+        if auth_error:
+            return auth_error
+
+        data, error = self._read_json_body()
+        if error:
+            return self._handle_scan_error(config, error, use_generic=True)
+
+        try:
+            result = request.env['vehicle.scan.service'].sudo().process_inbound_payload(data)
+            return self._json_response(result, cors=config.allow_cors)
+        except ValueError as exc:
+            return self._handle_scan_error(config, exc, use_generic=True)
+        except Exception as exc:
+            _logger.exception('Inbound scan processing failed')
+            return self._handle_scan_error(config, exc, status=500, use_generic=True)
