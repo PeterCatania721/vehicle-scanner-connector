@@ -36,7 +36,6 @@
                         </group>
                         <group string="Levabolli">
                             <field name="billing_status"/>
-                            <field name="boli_product_id"/>
                         </group>
                     </group>
                 </page>

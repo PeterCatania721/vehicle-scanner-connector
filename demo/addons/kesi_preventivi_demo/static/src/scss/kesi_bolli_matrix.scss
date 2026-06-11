@@ -1,0 +1,153 @@
+.o_kesi_preventivi_bolli {
+    padding: 8px 4px 16px;
+
+    .o_kesi_vehicle_type {
+        margin-bottom: 18px;
+        text-align: center;
+
+        h3 {
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+    }
+
+    .o_kesi_vehicle_type_body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 48px;
+        flex-wrap: wrap;
+    }
+
+    .o_kesi_vehicle_type_checks {
+        text-align: left;
+
+        > div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+    }
+
+    .o_kesi_vehicle_type_icons {
+        display: flex;
+        gap: 18px;
+        align-items: flex-end;
+    }
+
+    .o_kesi_vehicle_icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+
+        > span {
+            width: 42px;
+            height: 42px;
+            border: 2px solid #f0a35f;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #6b4b2d;
+            background: #fffaf4;
+        }
+    }
+
+    .o_kesi_bolli_matrix_wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .o_kesi_bolli_matrix_col {
+        background: #f7fafc;
+        border: 1px solid #d7e3ec;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(30, 60, 90, 0.06);
+        overflow: hidden;
+    }
+
+    .o_kesi_bolli_header,
+    .o_kesi_bolli_row {
+        display: grid;
+        grid-template-columns: minmax(130px, 1.4fr) 28px repeat(4, 34px) repeat(4, minmax(58px, 1fr));
+        align-items: center;
+        gap: 4px;
+        padding: 6px 8px;
+        border-bottom: 1px solid #e3edf4;
+    }
+
+    .o_kesi_bolli_header {
+        background: #eef5fa;
+        font-size: 11px;
+        font-weight: 600;
+        color: #35566f;
+        min-height: 42px;
+    }
+
+    .o_kesi_bolli_group_o {
+        grid-column: 2 / span 4;
+        background: #d9eaf7;
+        border-radius: 6px;
+        text-align: center;
+        padding: 4px 0;
+        font-weight: 700;
+    }
+
+    .o_kesi_bolli_subhead {
+        text-align: center;
+        line-height: 1.1;
+    }
+
+    .o_kesi_bolli_row {
+        background: #edf4fa;
+        min-height: 38px;
+
+        .o_kesi_bolli_label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #2f4d63;
+            padding-right: 4px;
+        }
+
+        .o_kesi_bolli_cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .o_kesi_bolli_num input,
+        .o_kesi_bolli_hour input {
+            width: 100%;
+            min-width: 48px;
+            text-align: center;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        &:has(.o_field_boolean input:checked),
+        &:has(.o_kesi_bolli_num input:not([value="0"]):not([value=""])) {
+            background: #d7ebc8;
+
+            .o_kesi_bolli_num .o_input,
+            .o_kesi_bolli_hour .o_input {
+                background: #edf9df;
+                border-color: #8bc26a;
+            }
+        }
+    }
+
+    .o_kesi_bolli_summary {
+        margin-top: 16px;
+        max-width: 480px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .o_kesi_preventivi_bolli .o_kesi_bolli_matrix_wrap {
+        grid-template-columns: 1fr;
+    }
+}

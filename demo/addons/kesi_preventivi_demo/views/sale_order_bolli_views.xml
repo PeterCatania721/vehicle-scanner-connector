@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_bolli" model="ir.ui.view">
+        <field name="name">sale.order.form.bolli</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="kesi_preventivi_demo.view_order_form_preventivi"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='preventivi_vehicle']" position="before">
+                <page string="Bolli" name="preventivi_bolli">
+                    <div class="o_kesi_preventivi_bolli">
+                        <div class="o_kesi_vehicle_type">
+                            <h3>Tipo di veicolo</h3>
+                            <div class="o_kesi_vehicle_type_body">
+                                <div class="o_kesi_vehicle_type_checks">
+                                    <field name="high_vehicle"/>
+                                    <field name="prep_vehicle"/>
+                                    <field name="prep_repair"/>
+                                </div>
+                                <div class="o_kesi_vehicle_type_icons">
+                                    <div class="o_kesi_vehicle_icon" title="Moto"><span>M</span><field name="vehicle_type0" nolabel="1"/></div>
+                                    <div class="o_kesi_vehicle_icon" title="City"><span>C</span><field name="vehicle_type1" nolabel="1"/></div>
+                                    <div class="o_kesi_vehicle_icon" title="Berlina"><span>B</span><field name="vehicle_type2" nolabel="1"/></div>
+                                    <div class="o_kesi_vehicle_icon" title="SUV"><span>S</span><field name="vehicle_type3" nolabel="1"/></div>
+                                    <div class="o_kesi_vehicle_icon" title="Furgone"><span>F</span><field name="vehicle_type4" nolabel="1"/></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="o_kesi_bolli_matrix_wrap">
+                            <div class="o_kesi_bolli_matrix_col">
+                                <div class="o_kesi_bolli_header">
+                                    <div class="o_kesi_bolli_label"/>
+                                    <div class="o_kesi_bolli_group o_kesi_bolli_group_o">Ø</div>
+                                    <div class="o_kesi_bolli_subhead">G</div>
+                                    <div class="o_kesi_bolli_subhead">A</div>
+                                    <div class="o_kesi_bolli_subhead">P</div>
+                                    <div class="o_kesi_bolli_subhead">M</div>
+                                    <div class="o_kesi_bolli_subhead">Fino a 25/L</div>
+                                    <div class="o_kesi_bolli_subhead">Fino a 50/M</div>
+                                    <div class="o_kesi_bolli_subhead">Smont. ORE</div>
+                                    <div class="o_kesi_bolli_subhead">Rimon ORE</div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="1">
+                                    <div class="o_kesi_bolli_label">Parafango Ant Sx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore1" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_1" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="2">
+                                    <div class="o_kesi_bolli_label">Porta Ant SX</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore2" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_2" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="3">
+                                    <div class="o_kesi_bolli_label">Porta Post SX</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore3" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_3" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="4">
+                                    <div class="o_kesi_bolli_label">Paraf Post Sx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore4" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_4" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="5">
+                                    <div class="o_kesi_bolli_label">Montante Sx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore5" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_5" nolabel="1"/></div>
+                                </div>
+                            </div>
+                            <div class="o_kesi_bolli_matrix_col">
+                                <div class="o_kesi_bolli_header">
+                                    <div class="o_kesi_bolli_label"/>
+                                    <div class="o_kesi_bolli_group o_kesi_bolli_group_o">Ø</div>
+                                    <div class="o_kesi_bolli_subhead">G</div>
+                                    <div class="o_kesi_bolli_subhead">A</div>
+                                    <div class="o_kesi_bolli_subhead">P</div>
+                                    <div class="o_kesi_bolli_subhead">M</div>
+                                    <div class="o_kesi_bolli_subhead">Fino a 25/L</div>
+                                    <div class="o_kesi_bolli_subhead">Fino a 50/M</div>
+                                    <div class="o_kesi_bolli_subhead">Smont. ORE</div>
+                                    <div class="o_kesi_bolli_subhead">Rimon ORE</div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="6">
+                                    <div class="o_kesi_bolli_label">Parafango Ant Dx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore6" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_6" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="7">
+                                    <div class="o_kesi_bolli_label">Porta Ant Dx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore7" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_7" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="8">
+                                    <div class="o_kesi_bolli_label">Porta Post Dx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore8" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_8" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="9">
+                                    <div class="o_kesi_bolli_label">Parafango Post Dx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore9" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_9" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="10">
+                                    <div class="o_kesi_bolli_label">Montante DX</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore10" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_10" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="12">
+                                    <div class="o_kesi_bolli_label">Cofano ANT</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore12" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_12" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="13">
+                                    <div class="o_kesi_bolli_label">Tetto</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore13" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_13" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="14">
+                                    <div class="o_kesi_bolli_label">Portellone/Baule</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore14" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_14" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="15">
+                                    <div class="o_kesi_bolli_label">Baule Sotto</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore15" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_15" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="16">
+                                    <div class="o_kesi_bolli_label">Sottoporta sx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore16" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_16" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="17">
+                                    <div class="o_kesi_bolli_label">Sottoporta dx</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore17" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_17" nolabel="1"/></div>
+                                </div>
+                                <div class="o_kesi_bolli_row" data-bolli-row="18">
+                                    <div class="o_kesi_bolli_label">Torpedo</div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="g18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="a18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="p18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_flag"><field name="mm_18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sotto18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_num"><field name="sopra18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore18" nolabel="1"/></div>
+                                    <div class="o_kesi_bolli_cell o_kesi_bolli_hour"><field name="ore_18" nolabel="1"/></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <group string="Riepilogo bolli" class="o_kesi_bolli_summary">
+                            <field name="boli_product_id"/>
+                            <field name="tot_bolli" readonly="1"/>
+                        </group>
+                    </div>
+                </page>
+                <page string="Calcolo Preventivo" name="preventivi_calc">
+                    <group>
+                        <field name="tot_bolli" readonly="1"/>
+                    </group>
+                </page>
+                <page string="Other Info" name="preventivi_other">
+                    <group>
+                        <field name="note" placeholder="Note aggiuntive..."/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
