@@ -5,6 +5,5 @@
         <field name="username">ai_scanner</field>
         <field name="password">change-me-on-install</field>
         <field name="allow_cors" eval="False"/>
-        <field name="auto_create_vehicle" eval="False"/>
     </record>
 </odoo>

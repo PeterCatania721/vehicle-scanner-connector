@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_car_model_tree" model="ir.ui.view">
+        <field name="name">car.model.list</field>
+        <field name="model">car.model</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="brand_id"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_car_model_form" model="ir.ui.view">
+        <field name="name">car.model.form</field>
+        <field name="model">car.model</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="brand_id"/>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_car_model" model="ir.actions.act_window">
+        <field name="name">Modelo</field>
+        <field name="res_model">car.model</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

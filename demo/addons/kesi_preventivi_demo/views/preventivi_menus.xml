@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_preventivi_root"
+        name="Preventivi"
+        web_icon="sale_management,static/description/icon.png"
+        sequence="30">
+
+        <menuitem id="menu_preventivi_orders"
+            name="Orders"
+            sequence="10">
+
+            <menuitem id="menu_preventivi_quotations_main"
+                name="Preventivi"
+                action="action_preventivi"
+                groups="sales_team.group_sale_salesman"
+                sequence="1"/>
+
+            <menuitem id="menu_preventivi_quotations"
+                name="Quotations"
+                action="sale.action_quotations_with_onboarding"
+                groups="sales_team.group_sale_salesman"
+                sequence="10"/>
+
+            <menuitem id="menu_preventivi_sale_orders"
+                name="Orders"
+                action="sale.action_orders"
+                groups="sales_team.group_sale_salesman"
+                sequence="20"/>
+
+            <menuitem id="menu_preventivi_sales_teams"
+                name="Sales Teams"
+                action="sales_team.crm_team_action_sales"
+                groups="sales_team.group_sale_manager"
+                sequence="30"/>
+
+            <menuitem id="menu_preventivi_customers"
+                name="Customers"
+                action="account.res_partner_action_customer"
+                groups="sales_team.group_sale_salesman"
+                sequence="40"/>
+        </menuitem>
+
+        <menuitem id="menu_preventivi_to_invoice"
+            name="To Invoice"
+            groups="sales_team.group_sale_salesman"
+            sequence="20">
+
+            <menuitem id="menu_preventivi_to_invoice_list"
+                name="Preventivi da fatturare"
+                action="action_preventivi_to_invoice"
+                sequence="10"/>
+
+            <menuitem id="menu_preventivi_upselling"
+                name="Preventivi per incremento vendite"
+                action="action_preventivi_upselling"
+                sequence="20"/>
+        </menuitem>
+
+        <menuitem id="menu_preventivi_products"
+            name="Products"
+            groups="sales_team.group_sale_salesman"
+            sequence="30">
+
+            <menuitem id="menu_preventivi_product_templates"
+                name="Products"
+                action="sale.product_template_action"
+                sequence="10"/>
+
+            <menuitem id="menu_preventivi_product_variants"
+                name="Product Variants"
+                action="product.product_normal_action_sell"
+                groups="product.group_product_variant"
+                sequence="20"/>
+
+            <menuitem id="menu_preventivi_pricelists"
+                name="Pricelists"
+                action="product.product_pricelist_action2"
+                groups="product.group_product_pricelist"
+                sequence="30"/>
+        </menuitem>
+
+        <menuitem id="menu_preventivi_reporting"
+            name="Reporting"
+            groups="sales_team.group_sale_manager"
+            sequence="40">
+
+            <menuitem id="menu_preventivi_report_sales"
+                name="Sales"
+                action="sale.action_order_report_all"
+                sequence="10"/>
+
+            <menuitem id="menu_preventivi_report_salespeople"
+                name="Salespersons"
+                action="sale.action_order_report_salesperson"
+                sequence="20"/>
+
+            <menuitem id="menu_preventivi_report_products"
+                name="Products"
+                action="sale.action_order_report_products"
+                sequence="30"/>
+
+            <menuitem id="menu_preventivi_report_customers"
+                name="Customers"
+                action="sale.action_order_report_customers"
+                sequence="40"/>
+        </menuitem>
+
+        <menuitem id="menu_preventivi_config"
+            name="Configuration"
+            groups="sales_team.group_sale_manager"
+            sequence="50">
+
+            <menuitem id="menu_preventivi_settings"
+                name="Settings"
+                action="sale.action_sale_config_settings"
+                groups="base.group_system"
+                sequence="10"/>
+
+            <menuitem id="menu_preventivi_config_sales_teams"
+                name="Sales Teams"
+                action="sales_team.crm_team_action_config"
+                sequence="20"/>
+
+            <menuitem id="menu_preventivi_config_sales_orders"
+                name="Sales Orders"
+                sequence="30">
+
+                <menuitem id="menu_preventivi_config_tags"
+                    name="Tags"
+                    action="sales_team.sales_team_crm_tag_action"
+                    sequence="10"/>
+            </menuitem>
+
+            <menuitem id="menu_preventivi_config_products"
+                name="Products"
+                sequence="40">
+
+                <menuitem id="menu_preventivi_config_attributes"
+                    name="Attributes"
+                    action="product.attribute_action"
+                    groups="product.group_product_variant"
+                    sequence="10"/>
+
+                <menuitem id="menu_preventivi_config_combos"
+                    name="Combo Choices"
+                    action="product.product_combo_action"
+                    sequence="15"/>
+
+                <menuitem id="menu_preventivi_config_categories"
+                    name="Categories"
+                    action="product.product_category_action_form"
+                    sequence="20"/>
+
+                <menuitem id="menu_preventivi_config_product_tags"
+                    name="Product Tags"
+                    action="product.product_tag_action"
+                    sequence="30"/>
+
+                <menuitem id="menu_preventivi_config_uom"
+                    name="Units &amp; Packagings"
+                    action="uom.product_uom_form_action"
+                    groups="uom.group_uom"
+                    sequence="35"/>
+            </menuitem>
+
+            <menuitem id="menu_preventivi_config_payments"
+                name="Online Payments"
+                groups="base.group_system"
+                sequence="45">
+
+                <menuitem id="menu_preventivi_config_payment_providers"
+                    action="payment.action_payment_provider"
+                    sequence="10"/>
+
+                <menuitem id="menu_preventivi_config_payment_methods"
+                    action="payment.action_payment_method"
+                    sequence="20"/>
+
+                <menuitem id="menu_preventivi_config_payment_tokens"
+                    action="payment.action_payment_token"
+                    groups="base.group_no_one"
+                    sequence="30"/>
+
+                <menuitem id="menu_preventivi_config_payment_transactions"
+                    action="payment.action_payment_transaction"
+                    groups="base.group_no_one"
+                    sequence="40"/>
+            </menuitem>
+
+            <menuitem id="menu_preventivi_config_activities"
+                name="Activities"
+                sequence="55">
+
+                <menuitem id="menu_preventivi_config_activity_types"
+                    action="sale.mail_activity_type_action_config_sale"
+                    groups="base.group_no_one"
+                    sequence="10"/>
+
+                <menuitem id="menu_preventivi_config_activity_plans"
+                    name="Activity Plans"
+                    action="sale.mail_activity_plan_action_sale_order"
+                    groups="sales_team.group_sale_manager"
+                    sequence="20"/>
+            </menuitem>
+        </menuitem>
+
+        <menuitem id="menu_preventivi_car_details"
+            name="Car Details"
+            groups="sales_team.group_sale_salesman"
+            sequence="100">
+
+            <menuitem id="menu_preventivi_car_brand"
+                name="Marca"
+                action="action_car_brand"
+                sequence="1"/>
+
+            <menuitem id="menu_preventivi_car_model"
+                name="Modelo"
+                action="action_car_model"
+                sequence="2"/>
+
+            <menuitem id="menu_preventivi_boli_product"
+                name="Bolli Product"
+                action="action_boli_product"
+                sequence="3"/>
+
+            <menuitem id="menu_preventivi_car_color"
+                name="Colore"
+                action="action_car_color"
+                sequence="3"/>
+        </menuitem>
+    </menuitem>
+</odoo>

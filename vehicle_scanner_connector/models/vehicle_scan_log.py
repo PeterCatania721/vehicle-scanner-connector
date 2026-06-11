@@ -22,8 +22,12 @@ class VehicleScanLog(models.Model):
         store=True,
         readonly=True,
     )
-    vehicle_id = fields.Many2one('fleet.vehicle', string='Vehicle', index=True)
     license_plate = fields.Char(string='License Plate', index=True)
+    client_code = fields.Char(
+        string='Client Code',
+        index=True,
+        help='Codice Cartella / client reference used to match preventivi.',
+    )
     scan_id = fields.Char(string='External Scan ID', index=True)
     case_number = fields.Char(string='Case Number', index=True)
     claim_number = fields.Char(string='Claim Number')
@@ -60,6 +64,21 @@ class VehicleScanLog(models.Model):
         default='received',
         required=True,
         index=True,
+    )
+    sale_order_id = fields.Many2one(
+        'sale.order',
+        string='Preventivo',
+        index=True,
+        ondelete='set null',
+    )
+    preventivi_action = fields.Selection(
+        [
+            ('created', 'Created'),
+            ('updated', 'Updated'),
+            ('skipped', 'Skipped'),
+        ],
+        string='Preventivi Action',
+        readonly=True,
     )
     error_message = fields.Text(string='Error Message')
     panel_ids = fields.One2many('vehicle.scan.panel', 'scan_log_id', string='Panels')
@@ -115,4 +134,14 @@ class VehicleScanLog(models.Model):
             'view_mode': 'kanban,list,form',
             'domain': [('res_model', '=', self._name), ('res_id', '=', self.id)],
             'context': {'default_res_model': self._name, 'default_res_id': self.id},
+        }
+
+    def action_open_preventivo(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Preventivo',
+            'res_model': 'sale.order',
+            'view_mode': 'form',
+            'res_id': self.sale_order_id.id,
         }

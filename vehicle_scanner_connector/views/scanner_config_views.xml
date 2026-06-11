@@ -19,10 +19,20 @@
                         </group>
                         <group string="Behavior">
                             <field name="allow_cors"/>
-                            <field name="auto_create_vehicle"/>
                             <field name="require_license_plate"/>
                             <field name="auto_process_panels"/>
                             <field name="strip_pdf_from_json_log"/>
+                            <field name="enable_preventivi_sync"/>
+                        </group>
+                    </group>
+                    <group string="Preventivi Sync">
+                        <group>
+                            <field name="preventivi_user_id"/>
+                            <field name="preventivi_partner_id"/>
+                        </group>
+                        <group>
+                            <field name="preventivi_product_id"/>
+                            <field name="preventivi_boli_product_ref"/>
                         </group>
                     </group>
                     <group string="Public API URLs">
@@ -66,6 +76,7 @@
                                     <field name="panel_index"/>
                                     <field name="budha_name"/>
                                     <field name="kesi_name"/>
+                                    <field name="kesi_bolli_row"/>
                                     <field name="active"/>
                                 </list>
                             </field>

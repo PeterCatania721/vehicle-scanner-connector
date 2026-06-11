@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="car_brand_bmw" model="car.brand">
+        <field name="name">BMW</field>
+    </record>
+    <record id="car_brand_audi" model="car.brand">
+        <field name="name">Audi</field>
+    </record>
+
+    <record id="car_model_320d" model="car.model">
+        <field name="name">320d</field>
+        <field name="brand_id" ref="car_brand_bmw"/>
+    </record>
+    <record id="car_model_a4" model="car.model">
+        <field name="name">A4</field>
+        <field name="brand_id" ref="car_brand_audi"/>
+    </record>
+
+    <record id="car_color_black" model="car.color">
+        <field name="name">Nero</field>
+    </record>
+    <record id="car_color_silver" model="car.color">
+        <field name="name">Argento</field>
+    </record>
+
+    <record id="boli_product_standard" model="boli.product">
+        <field name="name">Standard 2026</field>
+    </record>
+
+    <record id="partner_insurance_demo" model="res.partner">
+        <field name="name">Assicurazione Demo SA</field>
+        <field name="is_company">True</field>
+    </record>
+    <record id="partner_expert_demo" model="res.partner">
+        <field name="name">Perito Rossi</field>
+    </record>
+    <record id="partner_customer_demo" model="res.partner">
+        <field name="name">Cliente Demo SA</field>
+        <field name="is_company">True</field>
+    </record>
+
+    <record id="product_repair_hail" model="product.product">
+        <field name="name">Riparazione grandine</field>
+        <field name="list_price">450.0</field>
+        <field name="type">service</field>
+    </record>
+
+    <record id="preventivo_demo_001" model="sale.order">
+        <field name="partner_id" ref="partner_customer_demo"/>
+        <field name="license_plate">TI 12345</field>
+        <field name="ref">CART-2026-001</field>
+        <field name="practice_no">PR-1001</field>
+        <field name="chassis">WBA8E9G50GNU12345</field>
+        <field name="km">85000</field>
+        <field name="brand_id" ref="car_brand_bmw"/>
+        <field name="model_id" ref="car_model_320d"/>
+        <field name="color_id" ref="car_color_black"/>
+        <field name="hail">True</field>
+        <field name="dent_remover">True</field>
+        <field name="insurance_id" ref="partner_insurance_demo"/>
+        <field name="expert_id" ref="partner_expert_demo"/>
+        <field name="billing_status">not_paid</field>
+        <field name="boli_product_id" ref="boli_product_standard"/>
+    </record>
+
+    <record id="preventivo_demo_001_line" model="sale.order.line">
+        <field name="order_id" ref="preventivo_demo_001"/>
+        <field name="product_id" ref="product_repair_hail"/>
+        <field name="product_uom_qty">1</field>
+    </record>
+
+    <record id="preventivo_demo_002" model="sale.order">
+        <field name="partner_id" ref="partner_customer_demo"/>
+        <field name="license_plate">ZH 99999</field>
+        <field name="ref">CART-2026-002</field>
+        <field name="practice_no">PR-1002</field>
+        <field name="brand_id" ref="car_brand_audi"/>
+        <field name="model_id" ref="car_model_a4"/>
+        <field name="color_id" ref="car_color_silver"/>
+        <field name="panels">True</field>
+        <field name="billing_status">in_progress</field>
+        <field name="boli_product_id" ref="boli_product_standard"/>
+    </record>
+
+    <record id="preventivo_demo_002_line" model="sale.order.line">
+        <field name="order_id" ref="preventivo_demo_002"/>
+        <field name="product_id" ref="product_repair_hail"/>
+        <field name="product_uom_qty">1</field>
+    </record>
+</odoo>

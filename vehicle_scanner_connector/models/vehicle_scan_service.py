@@ -95,20 +95,6 @@ class VehicleScanService(models.AbstractModel):
         return vals
 
     @api.model
-    def find_vehicle(self, license_plate, config):
-        plate = self.normalize_license_plate(license_plate)
-        if not plate:
-            return self.env['fleet.vehicle']
-        Vehicle = self.env['fleet.vehicle'].sudo()
-        vehicle = Vehicle.search([('license_plate', '=ilike', plate)], limit=1)
-        if not vehicle:
-            compact = plate.replace(' ', '')
-            vehicle = Vehicle.search([('license_plate', 'ilike', compact)], limit=1)
-        if not vehicle and config.auto_create_vehicle:
-            vehicle = Vehicle.create({'name': plate, 'license_plate': plate})
-        return vehicle
-
-    @api.model
     def normalize_budha_payload(self, payload, config):
         wrapper = (config.payload_wrapper_key or '').strip()
         if wrapper and isinstance(payload, dict) and wrapper in payload:
@@ -208,8 +194,6 @@ class VehicleScanService(models.AbstractModel):
         license_plate = self._get_value_from_sources(
             case_data, 'Kennzeichen', 'plate', 'targa'
         )
-        vehicle = self.find_vehicle(license_plate, config)
-
         clean_data = dict(case_data)
         if config.strip_pdf_from_json_log:
             clean_data.pop('overviewPDF', None)
@@ -219,7 +203,6 @@ class VehicleScanService(models.AbstractModel):
             'name': f'BUHDA {case_number}',
             'source': 'budha',
             'config_id': config.id,
-            'vehicle_id': vehicle.id if vehicle else False,
             'license_plate': self.normalize_license_plate(license_plate),
             'case_number': case_number,
             'claim_number': case_data.get('Schadennummer'),
@@ -244,7 +227,7 @@ class VehicleScanService(models.AbstractModel):
             'status': 'received',
             'panel_ids': [(0, 0, line) for line in self._panel_lines_from_dents(case_data.get('Dents'), config)],
         }
-        return vals, license_plate, case_number, vehicle
+        return vals, license_plate, case_number
 
     @api.model
     def _create_attachments_from_budha_pdfs(self, scan_log, case_data):
@@ -327,7 +310,7 @@ class VehicleScanService(models.AbstractModel):
 
         for index, case_data in enumerate(cases, start=1):
             case_data = ParserRule.run_rules(config, payload, case_data, 'budha')
-            vals, license_plate, case_number, vehicle = self._build_budha_log_vals(case_data, config, index)
+            vals, license_plate, case_number = self._build_budha_log_vals(case_data, config, index)
             vals = self.apply_field_mappings(config, case_data, vals)
             self._validate_license_plate(config, vals.get('license_plate'))
 
@@ -335,10 +318,12 @@ class VehicleScanService(models.AbstractModel):
             pdf_saved = self._create_attachments_from_budha_pdfs(scan_log, case_data)
             _logger.info('BUHDA scan received: case=%s plate=%s log_id=%s', case_number, license_plate, scan_log.id)
 
+            preventivi = self._sync_preventivi_safe(scan_log, config)
             detail = {
                 'vorgangsnummer': case_number,
                 'license_plate': scan_log.license_plate,
                 'pdf_saved': pdf_saved,
+                'preventivi': preventivi,
             }
             if config.include_scan_log_id:
                 detail['scan_log_id'] = scan_log.id
@@ -362,14 +347,12 @@ class VehicleScanService(models.AbstractModel):
         license_plate = self._get_value_from_sources(data, 'plate', 'targa', 'Kennzeichen')
         self._validate_license_plate(config, license_plate)
 
-        vehicle = self.find_vehicle(license_plate, config)
         scan_id = data.get('scan_id')
 
         vals = {
             'name': f'Scan {license_plate or "unknown"} {scan_id or datetime.now().strftime("%Y%m%d_%H%M%S")}',
             'source': 'generic',
             'config_id': config.id,
-            'vehicle_id': vehicle.id if vehicle else False,
             'license_plate': self.normalize_license_plate(license_plate),
             'scan_id': scan_id,
             'scan_data': json.dumps(data, ensure_ascii=False, indent=2),
@@ -378,16 +361,24 @@ class VehicleScanService(models.AbstractModel):
         }
         vals = self.apply_field_mappings(config, data, vals)
 
+        client_code = self._get_value_from_sources(
+            data, 'client_code', 'codice_cartella', 'ref', 'folder_code',
+        )
+        if client_code:
+            vals['client_code'] = str(client_code).strip()
+
         scan_log = self.env['vehicle.scan.log'].sudo().create(vals)
         images_saved = self._create_attachments_from_images(scan_log, data.get('images'))
 
         _logger.info('Generic scan received: plate=%s log_id=%s', license_plate, scan_log.id)
+        preventivi = self._sync_preventivi_safe(scan_log, config)
         response = {
             'success': True,
             'message': config.response_success_message,
             'scan_log_id': scan_log.id,
             'license_plate': scan_log.license_plate,
             'images_saved': images_saved,
+            'preventivi': preventivi,
             'received_at': fields.Datetime.to_string(scan_log.received_at),
         }
         if not config.include_scan_log_id:
@@ -407,3 +398,16 @@ class VehicleScanService(models.AbstractModel):
         ):
             return self.with_context(inbound_mode=True).process_generic_scan(payload)
         raise ValueError(_('Unable to detect payload format for inbound endpoint'))
+
+    @api.model
+    def _sync_preventivi_safe(self, scan_log, config):
+        try:
+            return self.sync_preventivi_from_scan(scan_log, config)
+        except Exception as exc:
+            _logger.exception('Preventivi sync failed for scan log %s', scan_log.id)
+            scan_log.write({
+                'status': 'error',
+                'error_message': str(exc),
+                'preventivi_action': 'skipped',
+            })
+            return {'action': 'error', 'error': str(exc)}

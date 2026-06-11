@@ -410,7 +410,8 @@ class TestModuleStructure(unittest.TestCase):
         with open(manifest_path, encoding='utf-8') as f:
             content = f.read()
         self.assertIn("'version': '19.", content)
-        self.assertIn("'fleet'", content)
+        self.assertIn("'sale'", content)
+        self.assertNotIn("'fleet'", content)
         self.assertIn("'post_init_hook'", content)
 
     def test_security_access_csv_covers_all_models(self):
@@ -430,14 +431,15 @@ class TestModuleStructure(unittest.TestCase):
         ):
             self.assertIn(model, content)
 
-    def test_manifest_has_no_repair_dependency(self):
+    def test_manifest_has_no_fleet_or_repair_dependency(self):
         manifest_path = (
             '/Users/petercatania/Projects/vehicle-scanner-connector'
             '/vehicle_scanner_connector/__manifest__.py'
         )
         with open(manifest_path, encoding='utf-8') as f:
             content = f.read()
-        self.assertIn("'fleet'", content)
+        self.assertIn("'sale'", content)
+        self.assertNotIn("'fleet'", content)
         self.assertNotIn("'repair'", content)
         self.assertIn("'post_init_hook'", content)
 

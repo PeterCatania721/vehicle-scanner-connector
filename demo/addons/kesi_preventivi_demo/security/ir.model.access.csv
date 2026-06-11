@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_car_brand_user,car.brand.user,model_car_brand,sales_team.group_sale_salesman,1,1,1,0
+access_car_brand_manager,car.brand.manager,model_car_brand,sales_team.group_sale_manager,1,1,1,1
+access_car_model_user,car.model.user,model_car_model,sales_team.group_sale_salesman,1,1,1,0
+access_car_model_manager,car.model.manager,model_car_model,sales_team.group_sale_manager,1,1,1,1
+access_car_color_user,car.color.user,model_car_color,sales_team.group_sale_salesman,1,1,1,0
+access_car_color_manager,car.color.manager,model_car_color,sales_team.group_sale_manager,1,1,1,1
+access_boli_product_user,boli.product.user,model_boli_product,sales_team.group_sale_salesman,1,1,1,0
+access_boli_product_manager,boli.product.manager,model_boli_product,sales_team.group_sale_manager,1,1,1,1

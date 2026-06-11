@@ -8,8 +8,9 @@
                 <field name="name"/>
                 <field name="source"/>
                 <field name="license_plate"/>
-                <field name="vehicle_id"/>
                 <field name="case_number"/>
+                <field name="sale_order_id"/>
+                <field name="preventivi_action"/>
                 <field name="total_dents"/>
                 <field name="attachment_count"/>
                 <field name="status"/>
@@ -28,6 +29,12 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="action_open_preventivo" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                            invisible="not sale_order_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Preventivo</span>
+                            </div>
+                        </button>
                         <button name="action_view_attachments" type="object" class="oe_stat_button" icon="fa-paperclip">
                             <field name="attachment_count" widget="statinfo" string="Attachments"/>
                         </button>
@@ -41,10 +48,12 @@
                         <group>
                             <field name="source"/>
                             <field name="license_plate"/>
-                            <field name="vehicle_id"/>
+                            <field name="client_code"/>
                             <field name="scan_id"/>
                             <field name="case_number"/>
                             <field name="claim_number"/>
+                            <field name="sale_order_id"/>
+                            <field name="preventivi_action"/>
                         </group>
                         <group>
                             <field name="vehicle_description"/>
@@ -89,14 +98,13 @@
                 <field name="name"/>
                 <field name="license_plate"/>
                 <field name="case_number"/>
-                <field name="vehicle_id"/>
                 <filter name="filter_budha" string="BUHDA" domain="[('source', '=', 'budha')]"/>
                 <filter name="filter_generic" string="Generic" domain="[('source', '=', 'generic')]"/>
                 <filter name="filter_received" string="Received" domain="[('status', '=', 'received')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_source" string="Source" context="{'group_by': 'source'}"/>
                     <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
-                    <filter name="group_vehicle" string="Vehicle" context="{'group_by': 'vehicle_id'}"/>
+                    <filter name="group_license_plate" string="License Plate" context="{'group_by': 'license_plate'}"/>
                 </group>
             </search>
         </field>

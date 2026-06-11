@@ -3,7 +3,6 @@
     <menuitem
         id="menu_vehicle_scanner_root"
         name="Vehicle Scanner"
-        parent="fleet.menu_root"
         sequence="90"
         groups="vehicle_scanner_connector.group_vehicle_scanner_user"/>
 

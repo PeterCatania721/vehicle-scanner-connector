@@ -89,14 +89,14 @@ needs `ODOO_PASSWORD` exported).
 ```json
 {
   "model": "ir.module.module",
-  "domain": [["name", "=", "fleet"]],
+  "domain": [["name", "=", "base"]],
   "fields": ["name", "state"],
   "limit": 1
 }
 ```
 
-If `state` ≠ `installed`: **stop**. Tell user to install **Fleet** once via Odoo Apps
-UI (agent does not install Fleet via MCP).
+`base` must be `installed` (always true on a running Odoo). This module does **not**
+require Fleet.
 
 ### Phase 3 — Refresh apps list (MCP write)
 

@@ -13,9 +13,9 @@ if [[ ! -f "${MODULE}/__manifest__.py" ]]; then
   exit 1
 fi
 
-cd "$MODULE"
-zip -r "$OUT" . \
-  -x '__pycache__/*' \
+cd "$ROOT"
+zip -r "$OUT" "$(basename "$MODULE")" \
+  -x '*/__pycache__/*' \
   -x '*.pyc' \
   -x '.DS_Store'
 

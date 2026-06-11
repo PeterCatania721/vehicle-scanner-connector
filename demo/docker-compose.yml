@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+    volumes:
+      - odoo-demo-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  odoo:
+    image: odoo:19
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: odoo
+    volumes:
+      - ../vehicle_scanner_connector:/mnt/extra-addons/vehicle_scanner_connector:ro
+      - ./addons/kesi_preventivi_demo:/mnt/extra-addons/kesi_preventivi_demo:ro
+      - ./odoo.conf:/etc/odoo/odoo.conf:ro
+      - odoo-demo-data:/var/lib/odoo
+    command: odoo -c /etc/odoo/odoo.conf
+
+volumes:
+  odoo-demo-db:
+  odoo-demo-data:

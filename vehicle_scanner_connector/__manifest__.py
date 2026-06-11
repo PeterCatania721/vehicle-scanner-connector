@@ -1,6 +1,6 @@
 {
     'name': 'Vehicle Scanner Connector',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.5',
     'category': 'Fleet',
     'summary': 'Receive AI vehicle scan data from BUHDA and external scanners',
     'description': """
@@ -15,12 +15,13 @@ Features:
 - Universal inbound endpoint with auto-detect payload format
 - Scan logs with panel-level dent data
 - PDF and image attachments stored on scan records
-- Fleet vehicle lookup by license plate
+- License plate stored on each scan log
+- Auto create/update preventivi (sale.order) by targa, codice cartella, or telaio
 - Configurable API credentials (no hard-coded passwords)
     """,
     'author': 'KESI SA',
     'website': 'https://www.kesi.ch',
-    'depends': ['base', 'fleet'],
+    'depends': ['sale'],
     'data': [
         'security/vehicle_scanner_security.xml',
         'security/ir.model.access.csv',

@@ -96,11 +96,6 @@ class VehicleScannerConfig(models.Model):
         default=False,
         help='Enable only for testing. Disable in production.',
     )
-    auto_create_vehicle = fields.Boolean(
-        string='Auto-create Fleet Vehicle',
-        default=False,
-        help='Create a fleet.vehicle when no match is found for the license plate.',
-    )
     require_license_plate = fields.Boolean(
         string='Require License Plate',
         default=False,
@@ -109,6 +104,35 @@ class VehicleScannerConfig(models.Model):
     auto_process_panels = fields.Boolean(
         string='Auto-parse Panel Dents',
         default=True,
+    )
+
+    # --- Preventivi sync ---
+    enable_preventivi_sync = fields.Boolean(
+        string='Create/Update Preventivi from Scans',
+        default=True,
+        help='Automatically create or update sale quotations from incoming scans.',
+    )
+    preventivi_user_id = fields.Many2one(
+        'res.users',
+        string='Preventivi Owner / Tecnico',
+        domain=[('share', '=', False)],
+        help='User assigned as owner and technician on scanner-created preventivi.',
+    )
+    preventivi_partner_id = fields.Many2one(
+        'res.partner',
+        string='Default Preventivi Customer',
+        help='Customer used when creating preventivi from scans.',
+    )
+    preventivi_product_id = fields.Many2one(
+        'product.product',
+        string='Default Service Line',
+        domain=[('sale_ok', '=', True)],
+        help='Service product added to new preventivi created from scans.',
+    )
+    preventivi_boli_product_ref = fields.Integer(
+        string='Default Tabella di calcolo ID',
+        help='Database ID of the boli.product used on scanner-created preventivi. '
+             'Required for bolli calculation when the Levabolli module is installed.',
     )
 
     # --- API response (shown in BUHDA UI) ---
@@ -186,6 +210,15 @@ class VehicleScannerConfig(models.Model):
             return mapping.kesi_name or mapping.budha_name or f'Panel {panel_index}'
         return f'Panel {panel_index}'
 
+    def get_kesi_bolli_row(self, panel_index):
+        self.ensure_one()
+        mapping = self.panel_mapping_ids.filtered(
+            lambda m: m.active and m.panel_index == panel_index
+        )[:1]
+        if mapping and mapping.kesi_bolli_row:
+            return mapping.kesi_bolli_row
+        return self.env['vehicle.scanner.panel.mapping'].default_kesi_bolli_row(panel_index)
+
     def build_success_response(self, extra=None):
         self.ensure_one()
         payload = {
@@ -213,11 +246,12 @@ class VehicleScannerConfig(models.Model):
         self.ensure_one()
         defaults = self.env['vehicle.scanner.panel.mapping'].get_default_mappings()
         existing = {m.panel_index: m for m in self.panel_mapping_ids}
-        for panel_index, budha_name, kesi_name in defaults:
+        for panel_index, budha_name, kesi_name, kesi_bolli_row in defaults:
             if panel_index in existing:
                 existing[panel_index].write({
                     'budha_name': budha_name,
                     'kesi_name': kesi_name,
+                    'kesi_bolli_row': kesi_bolli_row,
                     'active': True,
                 })
             else:
@@ -226,6 +260,7 @@ class VehicleScannerConfig(models.Model):
                     'panel_index': panel_index,
                     'budha_name': budha_name,
                     'kesi_name': kesi_name,
+                    'kesi_bolli_row': kesi_bolli_row,
                     'active': True,
                 })
         return True

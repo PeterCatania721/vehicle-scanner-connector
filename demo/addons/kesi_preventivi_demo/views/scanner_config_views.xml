@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_vehicle_scanner_config_form_preventivi" model="ir.ui.view">
+        <field name="name">vehicle.scanner.config.form.preventivi</field>
+        <field name="model">vehicle.scanner.config</field>
+        <field name="inherit_id" ref="vehicle_scanner_connector.view_vehicle_scanner_config_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='enable_preventivi_sync']" position="after">
+                <field name="preventivi_boli_product_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

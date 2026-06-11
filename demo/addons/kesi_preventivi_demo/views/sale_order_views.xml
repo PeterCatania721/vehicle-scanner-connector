@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_preventivi" model="ir.ui.view">
+        <field name="name">sale.order.form.preventivi</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="license_plate"/>
+                <field name="ref"/>
+                <field name="practice_no"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">Tecnico</attribute>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Veicolo" name="preventivi_vehicle">
+                    <group>
+                        <group string="Dati veicolo">
+                            <field name="brand_id"/>
+                            <field name="model_id"/>
+                            <field name="color_id"/>
+                            <field name="chassis"/>
+                            <field name="km"/>
+                        </group>
+                        <group string="Danni">
+                            <field name="hail"/>
+                            <field name="dent_remover"/>
+                            <field name="panels"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Assicurazione">
+                            <field name="insurance_id"/>
+                            <field name="expert_id"/>
+                        </group>
+                        <group string="Levabolli">
+                            <field name="billing_status"/>
+                            <field name="boli_product_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_preventivi" model="ir.ui.view">
+        <field name="name">sale.order.list.preventivi</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="license_plate" optional="show"/>
+                <field name="ref" optional="show"/>
+                <field name="practice_no" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">Tecnico</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="billing_status" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_tree_preventivi" model="ir.ui.view">
+        <field name="name">sale.order.list.preventivi.orders</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="license_plate" optional="show"/>
+                <field name="ref" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">Tecnico</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="billing_status" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sale_order_search_preventivi" model="ir.ui.view">
+        <field name="name">sale.order.search.preventivi</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="license_plate"/>
+                <field name="ref"/>
+                <field name="practice_no"/>
+                <field name="chassis"/>
+                <filter string="Grandine" name="filter_hail" domain="[('hail', '=', True)]"/>
+                <filter string="Levabolli non pagato" name="filter_not_paid" domain="[('billing_status', '=', 'not_paid')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_preventivi" model="ir.actions.act_window">
+        <field name="name">Preventivi</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="context">{'search_default_my_quotation': 1}</field>
+    </record>
+
+    <record id="action_preventivi_to_invoice" model="ir.actions.act_window">
+        <field name="name">Preventivi da fatturare</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,calendar,graph,pivot,kanban,activity</field>
+        <field name="domain">[('invoice_status', '=', 'to invoice')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+    </record>
+
+    <record id="action_preventivi_upselling" model="ir.actions.act_window">
+        <field name="name">Preventivi per incremento vendite</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,calendar,graph,pivot,kanban,activity</field>
+        <field name="domain">[('invoice_status', '=', 'upselling')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+    </record>
+</odoo>

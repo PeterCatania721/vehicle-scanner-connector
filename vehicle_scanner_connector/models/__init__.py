@@ -5,3 +5,4 @@ from . import parser_rule
 from . import vehicle_scan_log
 from . import vehicle_scan_panel
 from . import vehicle_scan_service
+from . import preventivi_sync
